@@ -1,0 +1,51 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jwt-demo
+    username: postgres
+    password: roottcm123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+
+application:
+  security:
+    jwt:
+      secret-key: 50352d383a2d3b256441505e5f7b242b2e695f52293e343776453e7d45
+      expiration:  3600000 #an hour
+      refresh-token:
+        expiration:  43200000
+
+mail:
+  host: localhost
+  port: 1025
+  username: hello
+  password: hello
+
+  properties:
+    mail:
+      smtp:
+        ssl:
+          trust: "*"
+        auth: true
+        starttls:
+          enable: true
+        connectiontimeout: 500
+        timeout: 3000
+        writetimeout: 5000
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security=DEBUG:
+      hibernate=DEBUG:
+      hibernate:
+        SQL=DEBUG:
+    web: debug
