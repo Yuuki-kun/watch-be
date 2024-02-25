@@ -53,14 +53,26 @@ public class CartController {
                 "not found, " +
                 "id="+cartItem.getCartId()));
         Watch watch = entityManager.getReference(Watch.class, cartItem.getWatchId());
-        OrderDetails orderDetails = OrderDetails.builder()
+
+        List<OrderDetails> orderDetails = cart.getOrderDetails();
+
+        for (OrderDetails o:
+             orderDetails) {
+            if(o.getWatch().getId().equals((long) cartItem.getWatchId())){
+                o.setQuantity(o.getQuantity()+1);
+                cartRepository.save(cart);
+                return ResponseEntity.ok(orderDetailsMapper.mapTo(o));
+            }
+        }
+
+        OrderDetails orderDetail = OrderDetails.builder()
                 .price(cartItem.getPrice())
                 .quantity(cartItem.getQuantity())
                 .watch(watch)
                 .build();
-        cart.addOrderDetails(orderDetails);
+        cart.addOrderDetails(orderDetail);
         cartRepository.save(cart);
-        return ResponseEntity.ok(orderDetailsMapper.mapTo(orderDetails));
+        return ResponseEntity.ok(orderDetailsMapper.mapTo(orderDetail));
     }
 
     /**
@@ -82,10 +94,11 @@ public class CartController {
             if(o.getId().equals(Long.valueOf(orderDetailsId))){
                 System.out.println("o="+o.getId()+"id="+orderDetailsId);
                 cart.removeOrderDetails(o);
-                orderDetailsRepository.delete(o);
+//                orderDetailsRepository.delete(o);
                 break;
             }
         }
+        cartRepository.save(cart);
         List<OrderDetailsDto> orderDetailsDto =
                 cart.getOrderDetails().stream().map(
                         orderDetailsMapper::mapTo
@@ -95,9 +108,36 @@ public class CartController {
 
     @PutMapping("/update-quantity")
     public ResponseEntity<List<OrderDetailsDto>> updateItemQuantity(@RequestParam("cart") String cartId,
-                                                                    @RequestParam("item") String itemId,
+                                                                    @RequestParam("item") String orderDetailsId,
                                                                     @RequestParam("method") String method){
-        return ResponseEntity.ok(new ArrayList<>());
+
+        Cart cart = cartRepository.findById(Long.valueOf(cartId)).orElseThrow(()-> new NotFoundException("cart " +
+                "not found, " +
+                "id="+cartId));
+        List<OrderDetails> orderDetails = cart.getOrderDetails();
+
+        for (OrderDetails o:
+                orderDetails) {
+            if(o.getId().equals(Long.valueOf(orderDetailsId))){
+                if(method.equals("increase")){
+                    System.out.println("o="+o.getId()+"id="+orderDetailsId);
+                    o.setQuantity(o.getQuantity()+1);
+                }else if(method.equals("decrease")){
+                    if(o.getQuantity()==1){
+                        cart.removeOrderDetails(o);
+                    }else{
+                        o.setQuantity(o.getQuantity()-1);
+                    }
+                }
+                break;
+            }
+        }
+        cartRepository.save(cart);
+        List<OrderDetailsDto> orderDetailsDto =
+                cart.getOrderDetails().stream().map(
+                        orderDetailsMapper::mapTo
+                ).collect(Collectors.toList());
+        return ResponseEntity.ok(orderDetailsDto);
     }
 
 }

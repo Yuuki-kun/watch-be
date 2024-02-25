@@ -23,6 +23,7 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @OrderBy("id ASC") // Sắp xếp danh sách orderDetails theo id
     private List<OrderDetails> orderDetails = new ArrayList<>();
 
     public void setOrderDetails (List<OrderDetails> orderDetails){
