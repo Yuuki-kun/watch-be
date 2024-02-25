@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,5 +93,11 @@ public class CartController {
         return ResponseEntity.ok(orderDetailsDto);
     }
 
+    @PutMapping("/update-quantity")
+    public ResponseEntity<List<OrderDetailsDto>> updateItemQuantity(@RequestParam("cart") String cartId,
+                                                                    @RequestParam("item") String itemId,
+                                                                    @RequestParam("method") String method){
+        return ResponseEntity.ok(new ArrayList<>());
+    }
 
 }

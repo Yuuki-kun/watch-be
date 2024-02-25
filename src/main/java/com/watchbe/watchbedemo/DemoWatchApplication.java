@@ -16,10 +16,10 @@ import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
-public class DemoJwtApplication {
+public class DemoWatchApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoJwtApplication.class, args);
+        SpringApplication.run(DemoWatchApplication.class, args);
     }
 
     @Bean
