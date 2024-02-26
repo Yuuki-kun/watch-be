@@ -64,6 +64,7 @@ public class AuthenticationService {
                 .gender(registerRequest.getGender())
                 .account(account)
                 .cart(cart)
+                .email(registerRequest.getEmail())
                 .build();
 
 
@@ -115,6 +116,7 @@ public class AuthenticationService {
                     .phoneNumber(registerRequest.getPhoneNumber())
                     .gender(registerRequest.getGender())
                     .account(account)
+                    .email(registerRequest.getEmail())
                     .build();
             savedCustomer = customerRepository.save(customer);
         }catch (DataIntegrityViolationException e){
@@ -202,6 +204,7 @@ public class AuthenticationService {
                             .access_token(jwtToken)
                             .refresh_token(refreshToken)
                             .cartId(cart.getId())
+                            .userId(customer.getId())
                     .roles(roleSPrivateValue).build());
         }catch (DisabledException e){
             //return a response instead
@@ -279,6 +282,7 @@ public class AuthenticationService {
                         .email(userEmail)
                         .roles(roles)
                         .cartId(cart.getId())
+                        .userId(customer.getId())
                         .access_token(accessToken)
                         .refresh_token(refreshToken).build();
 
@@ -350,6 +354,7 @@ public class AuthenticationService {
                 .access_token(jwtToken)
                 .refresh_token(refreshToken)
                         .cartId(customer.getCart().getId())
+                        .userId(customer.getId())
                 .roles(roleSPrivateValue).build());
     }
 

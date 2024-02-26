@@ -25,4 +25,5 @@ public class AuthenticationResponse {
     private String message;
 
     private long cartId;
+    private long userId;
 }
