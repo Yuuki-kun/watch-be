@@ -94,4 +94,14 @@ public class FavoriteController {
         }
 
     }
+
+    /**
+     *
+     * @param cid: id of customer
+     * @return
+     */
+    @GetMapping("/list-detail/{cid}")
+    private List<FavoriteDto> getFavoriteListDetails(@PathVariable long cid){
+        return favoriteRepository.findAllByCustomerId(cid).stream().map(favoriteMapper::mapTo).collect(Collectors.toList());
+    }
 }
