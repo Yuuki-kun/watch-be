@@ -8,8 +8,14 @@ import com.watchbe.watchbedemo.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,9 +25,20 @@ import java.util.List;
 public class DemoWatchApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoWatchApplication.class, args);
-    }
+//        SpringApplication.run(DemoWatchApplication.class, args);
+        ApplicationContext context = SpringApplication.run(DemoWatchApplication.class, args);
 
+        DataSource dataSource = context.getBean(DataSource.class);
+        executeSqlScript(dataSource, "script/ImportData_vn_units.sql");
+
+    }
+    private static void executeSqlScript(DataSource dataSource, String scriptPath) {
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource(scriptPath));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     @Bean
     public CommandLineRunner commandLineRunner(
             AuthenticationService authenticationService,
@@ -331,7 +348,7 @@ public class DemoWatchApplication {
                             "Jubilee band.")
                     .defaultPrices(520.994f)
                     .limited(false)
-                    .inventoryQuantity(100L)
+                    .inventoryQuantity(10)
                     .warranty(5L).soldQuantity(50L)
                     .band(band2)
                     .watchCase(acase2)

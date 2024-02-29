@@ -5,11 +5,15 @@ import com.watchbe.watchbedemo.auth.email.EmailSender;
 import com.watchbe.watchbedemo.config.JwtService;
 import com.watchbe.watchbedemo.model.Cart;
 import com.watchbe.watchbedemo.model.Customer;
+import com.watchbe.watchbedemo.model.OrderDetails;
+import com.watchbe.watchbedemo.model.Watch;
 import com.watchbe.watchbedemo.repository.*;
 import com.watchbe.watchbedemo.token.ConfirmationToken;
 import com.watchbe.watchbedemo.token.Token;
 import com.watchbe.watchbedemo.token.TokenType;
 import com.watchbe.watchbedemo.model.account.Account;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -105,11 +109,13 @@ public class AuthenticationService {
 
         var account = Account.builder()
                 .email(registerRequest.getEmail())
+                .enabled(true)
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(registerRequest.getRole())
                 .build();
         Customer savedCustomer = null;
         try{
+            Cart cart = Cart.builder().build();
             var customer = Customer.builder()
                     .firstName(registerRequest.getFirstName())
                     .lastName(registerRequest.getLastName())
@@ -118,6 +124,7 @@ public class AuthenticationService {
                     .account(account)
                     .email(registerRequest.getEmail())
                     .build();
+            customer.setCart(cart);
             savedCustomer = customerRepository.save(customer);
         }catch (DataIntegrityViolationException e){
               return ResponseEntity.status(HttpStatus.CONFLICT).body(
@@ -126,37 +133,39 @@ public class AuthenticationService {
         }
         var savedAccount = savedCustomer.getAccount();
 
-//        var jwtToken = jwtService.generateToken(account);
-//        var refreshToken = jwtService.generateRefreshToken(account);
-//        var token = Token.builder()
-//                .account(savedUser)
-//                .token(jwtToken)
-//                .tokenType(TokenType.BEARER)
-//                .expired(false)
-//                .revoked(false)
-//                .build();
-//        tokenRepository.save(token);
+        var jwtToken = jwtService.generateToken(account);
+        var refreshToken = jwtService.generateRefreshToken(account);
+        var token = Token.builder()
+                .account(savedAccount)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
 
-        String confirmTokenGeneration = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = ConfirmationToken.builder()
-                .token(confirmTokenGeneration)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusMinutes(15))
-                .account(savedAccount).build();
-        confirmationTokenRepository.save(confirmationToken);
+//        String confirmTokenGeneration = UUID.randomUUID().toString();
+//        ConfirmationToken confirmationToken = ConfirmationToken.builder()
+//                .token(confirmTokenGeneration)
+//                .createdAt(LocalDateTime.now())
+//                .expiresAt(LocalDateTime.now().plusMinutes(15))
+//                .account(savedAccount).build();
+//        confirmationTokenRepository.save(confirmationToken);
 
         List<Integer> roleSPrivateValue = new ArrayList<>();
         //loop through account's roles if there are many roles
         roleSPrivateValue.add(savedAccount.getRole().getValue());
 
-        String activeLink = "http://localhost:3000/active-account/" + confirmTokenGeneration;
-        emailSender.send(registerRequest.getEmail(), buildEmail(registerRequest.getFirstName(), activeLink));
+//        String activeLink = "http://localhost:3000/active-account/" + confirmTokenGeneration;
+//        emailSender.send(registerRequest.getEmail(), buildEmail(registerRequest.getFirstName(), activeLink));
 
         return ResponseEntity.ok(AuthenticationResponse.builder()
                 .email(account.getEmail())
-//                .access_token(jwtToken)
-//                .refresh_token(refreshToken)
+                .access_token(jwtToken)
+                .refresh_token(refreshToken)
                 .roles(roleSPrivateValue)
+                        .userId(savedCustomer.getId())
+                        .cartId(savedCustomer.getCart().getId())
                 .build());
     }
 
@@ -205,6 +214,104 @@ public class AuthenticationService {
                             .refresh_token(refreshToken)
                             .cartId(cart.getId())
                             .userId(customer.getId())
+                    .roles(roleSPrivateValue).build());
+        }catch (DisabledException e){
+            //return a response instead
+//            throw new RuntimeException("Your account is disabled. Please contact support for assistance.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(AuthenticationResponse.builder()
+                            .message("Your account is disabled. Please contact support for assistance.")
+                            .build());
+
+        }catch (AuthenticationException e){
+//            throw new RuntimeException("Authentication failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AuthenticationResponse.builder()
+                            .message("Authentication failed: " + e.getMessage())
+                            .build());
+        }
+    }
+
+    @PersistenceContext
+    private EntityManager entityManager;
+    private final OrderDetailsRepository orderDetailsRepository;
+    public ResponseEntity<AuthenticationResponse> authenticateCheckout(AuthenticationCheckoutRequest authenticationCheckoutRequest) {
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationCheckoutRequest.getEmail(),
+                            authenticationCheckoutRequest.getPassword()
+                    )
+            );
+            var account = accountRepository.findByEmail(authenticationCheckoutRequest.getEmail()).orElseThrow();
+
+            var jwtToken = jwtService.generateToken(account);
+            var refreshToken = jwtService.generateRefreshToken(account);
+
+            //all tokens must be revoked
+            revokeAllUserTokens(account);
+
+            var token = Token.builder()
+                    .account(account)
+                    .token(jwtToken)
+                    .tokenType(TokenType.BEARER)
+                    .expired(false)
+                    .revoked(false)
+                    .build();
+            tokenRepository.save(token);
+            System.out.println("authenticate at: "+ LocalDateTime.now());
+            //update account last login
+            LocalDateTime newLogin = LocalDateTime.now();
+            account.setLastLogin(newLogin);
+            accountRepository.save(account);
+
+            List<Integer> roleSPrivateValue = new ArrayList<>();
+            //loop through account's roles if there are many roles
+            roleSPrivateValue.add(account.getRole().getValue());
+
+            Customer customer = customerRepository.findCustomerByAccountId(account.getId());
+            Cart cart = customer.getCart();
+
+            //handle old order details list
+            List<OrderDetails> orderDetails = new ArrayList<>();
+
+            authenticationCheckoutRequest.getCartItems().forEach(cartItem -> {
+                orderDetails.add(OrderDetails.builder()
+                        .price(cartItem.getPrice())
+                        .quantity(cartItem.getQuantity())
+                        .watch(entityManager.getReference(Watch.class, cartItem.getWatchId()))
+                        .build());
+            });
+
+
+            //xoa temporary cart
+            //find the first order details item
+            var orderdet =
+                    orderDetailsRepository.findById(authenticationCheckoutRequest.getCartItems().get(0).getCartId());
+
+            Long oldCartId = orderdet.get().getCart().getId();
+            System.out.println("old id = "+oldCartId);
+            //delete cart and order items in cart
+            cartRepository.deleteById(oldCartId);
+
+            //set the new items for current customer
+//            cart.setOrderDetails(orderDetails); // => the method set will not working if find and update operations
+//            are in the same transaction
+//            System.out.println("order details = "+orderDetails);
+            System.out.println("cart id = "+cart.getId());
+            orderDetails.forEach(cart::addOrderDetails);
+            cartRepository.save(cart);
+
+            //after that the user will be redirected to check out page
+
+
+            return ResponseEntity.ok(AuthenticationResponse
+                    .builder()
+                    .email(account.getEmail())
+                    .access_token(jwtToken)
+                    .refresh_token(refreshToken)
+                    .cartId(cart.getId())
+                    .userId(customer.getId())
                     .roles(roleSPrivateValue).build());
         }catch (DisabledException e){
             //return a response instead
@@ -426,6 +533,7 @@ public class AuthenticationService {
                 "\n" +
                 "</div></div>";
     }
+
 
 
 }

@@ -21,6 +21,9 @@ public class AuthenticationController {
             @RequestBody RegisterRequest registerRequest,
             HttpServletResponse response
     ){
+        if(registerRequest.getProductDataRegisters()!=null){
+
+        }
         return  authenticationService.register(registerRequest, response);
     }
 
@@ -30,6 +33,13 @@ public class AuthenticationController {
     ){
         return  authenticationService.authenticate(authenticationRequest);
 
+    }
+    @PostMapping("/authenticate-checkout")
+    public ResponseEntity<AuthenticationResponse> authenticateCheckout(
+            @RequestBody AuthenticationCheckoutRequest authenticationCheckoutRequest
+    ){
+
+        return  authenticationService.authenticateCheckout(authenticationCheckoutRequest);
     }
 
 

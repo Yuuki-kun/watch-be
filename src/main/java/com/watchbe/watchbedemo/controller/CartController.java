@@ -75,6 +75,13 @@ public class CartController {
         return ResponseEntity.ok(orderDetailsMapper.mapTo(orderDetail));
     }
 
+    @GetMapping("/tempo-cart")
+    public ResponseEntity<String> getTempoCart(){
+        Cart cart = Cart.builder().build();
+        cartRepository.save(cart);
+        return ResponseEntity.ok(String.valueOf(cart.getId()));
+    }
+
     /**
      *
      * @param

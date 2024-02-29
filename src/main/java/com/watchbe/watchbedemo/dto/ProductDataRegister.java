@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class CartItem {
-    private Long cartId; //=> cart item id also use as order-details id if it's returned to client
-    private Long watchId;
+@AllArgsConstructor
+public class ProductDataRegister {
+    private Long id;
+
+    private long quantity;
+    //price after discount
     private float price;
-    private Long quantity;
+    private Long watchId;
 }
