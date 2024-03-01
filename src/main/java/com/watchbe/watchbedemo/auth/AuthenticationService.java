@@ -3,6 +3,7 @@ package com.watchbe.watchbedemo.auth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.watchbe.watchbedemo.auth.email.EmailSender;
 import com.watchbe.watchbedemo.config.JwtService;
+import com.watchbe.watchbedemo.exception.NotFoundException;
 import com.watchbe.watchbedemo.model.Cart;
 import com.watchbe.watchbedemo.model.Customer;
 import com.watchbe.watchbedemo.model.OrderDetails;
@@ -235,7 +236,8 @@ public class AuthenticationService {
     @PersistenceContext
     private EntityManager entityManager;
     private final OrderDetailsRepository orderDetailsRepository;
-    public ResponseEntity<AuthenticationResponse> authenticateCheckout(AuthenticationCheckoutRequest authenticationCheckoutRequest) {
+    public ResponseEntity<AuthenticationResponse> authenticateCheckout(Long tempoCartId,
+                                                                       AuthenticationRequest authenticationCheckoutRequest) {
         try{
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -273,32 +275,13 @@ public class AuthenticationService {
             Cart cart = customer.getCart();
 
             //handle old order details list
-            List<OrderDetails> orderDetails = new ArrayList<>();
 
-            authenticationCheckoutRequest.getCartItems().forEach(cartItem -> {
-                orderDetails.add(OrderDetails.builder()
-                        .price(cartItem.getPrice())
-                        .quantity(cartItem.getQuantity())
-                        .watch(entityManager.getReference(Watch.class, cartItem.getWatchId()))
-                        .build());
-            });
-
-
-            //xoa temporary cart
-            //find the first order details item
-            var orderdet =
-                    orderDetailsRepository.findById(authenticationCheckoutRequest.getCartItems().get(0).getCartId());
-
-            Long oldCartId = orderdet.get().getCart().getId();
-            System.out.println("old id = "+oldCartId);
-            //delete cart and order items in cart
-            cartRepository.deleteById(oldCartId);
 
             //set the new items for current customer
 //            cart.setOrderDetails(orderDetails); // => the method set will not working if find and update operations
 //            are in the same transaction
 //            System.out.println("order details = "+orderDetails);
-            System.out.println("cart id = "+cart.getId());
+            List<OrderDetails> orderDetails = handleItems(tempoCartId);
             orderDetails.forEach(cart::addOrderDetails);
             cartRepository.save(cart);
 
@@ -328,6 +311,20 @@ public class AuthenticationService {
                             .message("Authentication failed: " + e.getMessage())
                             .build());
         }
+    }
+
+    private List<OrderDetails> handleItems (Long tempoCartId){
+        Cart cart =
+                cartRepository.findById(tempoCartId).orElseThrow(()-> new NotFoundException("cart with id "+tempoCartId+" not found!"));
+
+        //get items of tempo cart set for new account
+        List<OrderDetails> orderDetails = cart.getOrderDetails();
+
+        //delete cart and order items in cart
+        cartRepository.delete(cart);
+
+        //return cart item list
+        return orderDetails;
     }
 
     private void revokeAllUserTokens(Account account) {

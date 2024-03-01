@@ -34,12 +34,13 @@ public class AuthenticationController {
         return  authenticationService.authenticate(authenticationRequest);
 
     }
-    @PostMapping("/authenticate-checkout")
+    @PostMapping("/authenticate-checkout/{tempoCartId}")
     public ResponseEntity<AuthenticationResponse> authenticateCheckout(
-            @RequestBody AuthenticationCheckoutRequest authenticationCheckoutRequest
-    ){
 
-        return  authenticationService.authenticateCheckout(authenticationCheckoutRequest);
+            @RequestBody AuthenticationRequest authenticationRequest,
+            @PathVariable("tempoCartId") Long tempoCartId){
+
+        return  authenticationService.authenticateCheckout(tempoCartId,authenticationRequest);
     }
 
 
