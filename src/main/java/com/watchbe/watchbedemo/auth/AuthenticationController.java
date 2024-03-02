@@ -16,15 +16,16 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/register")
+
+    @PostMapping("/register/{method}/{tempoCartId}")
     public ResponseEntity<AuthenticationResponse> register(
+            @PathVariable(value = "method", required = false) String method,
+            @PathVariable(value = "tempoCartId", required = false) Long tempoCartId,
             @RequestBody RegisterRequest registerRequest,
             HttpServletResponse response
     ){
-        if(registerRequest.getProductDataRegisters()!=null){
 
-        }
-        return  authenticationService.register(registerRequest, response);
+        return  authenticationService.register(method, tempoCartId, registerRequest, response);
     }
 
     @PostMapping("/authenticate")

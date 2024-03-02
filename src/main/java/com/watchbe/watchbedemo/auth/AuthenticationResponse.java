@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthenticationResponse {
-
     private String email;
 
     @JsonProperty("access_token")
@@ -26,4 +25,7 @@ public class AuthenticationResponse {
 
     private long cartId;
     private long userId;
+
+
+
 }

@@ -97,7 +97,10 @@ public class AuthenticationService {
                 .build();
     }
 
-    public ResponseEntity<AuthenticationResponse> register(RegisterRequest registerRequest, HttpServletResponse response) {
+    public ResponseEntity<AuthenticationResponse> register(String method,
+                                                           Long tempoCartId,
+                                                           RegisterRequest registerRequest,
+                                                           HttpServletResponse response) {
         boolean accountExists = accountRepository.findByEmail(registerRequest.getEmail()).isPresent();
         System.out.println("regis email="+registerRequest.getEmail());
         System.out.println("accountExists="+accountExists);
@@ -116,7 +119,9 @@ public class AuthenticationService {
                 .build();
         Customer savedCustomer = null;
         try{
-            Cart cart = Cart.builder().build();
+            Cart cart = Cart.builder().orderDetails(new ArrayList<>()).build();
+//            cartRepository.save(cart);
+
             var customer = Customer.builder()
                     .firstName(registerRequest.getFirstName())
                     .lastName(registerRequest.getLastName())
@@ -127,6 +132,12 @@ public class AuthenticationService {
                     .build();
             customer.setCart(cart);
             savedCustomer = customerRepository.save(customer);
+            if(method.equals("checkout")){
+                List<OrderDetails> orderDetails = handleItems(tempoCartId);
+               orderDetails.forEach(cart::addOrderDetails);
+               cartRepository.save(cart);
+            }
+
         }catch (DataIntegrityViolationException e){
               return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     AuthenticationResponse.builder().message("Phone taken.").build()
@@ -233,9 +244,6 @@ public class AuthenticationService {
         }
     }
 
-    @PersistenceContext
-    private EntityManager entityManager;
-    private final OrderDetailsRepository orderDetailsRepository;
     public ResponseEntity<AuthenticationResponse> authenticateCheckout(Long tempoCartId,
                                                                        AuthenticationRequest authenticationCheckoutRequest) {
         try{
@@ -318,12 +326,14 @@ public class AuthenticationService {
                 cartRepository.findById(tempoCartId).orElseThrow(()-> new NotFoundException("cart with id "+tempoCartId+" not found!"));
 
         //get items of tempo cart set for new account
-        List<OrderDetails> orderDetails = cart.getOrderDetails();
+        //return cart item list //=> bad process => should move OrderDetails to another list before delete cart
+//        List<OrderDetails> orderDetails = cart.getOrderDetails();
+        List<OrderDetails> orderDetails = new ArrayList<>(cart.getOrderDetails());
 
         //delete cart and order items in cart
         cartRepository.delete(cart);
 
-        //return cart item list
+        //return cart item list //=> bad process => should move OrderDetails to another list before delete cart
         return orderDetails;
     }
 

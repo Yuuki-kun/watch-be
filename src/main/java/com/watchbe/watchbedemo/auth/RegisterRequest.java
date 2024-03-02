@@ -22,5 +22,4 @@ public class RegisterRequest {
     private Role role;
     private String phoneNumber;
     private String gender;
-    private List<ProductDataRegister> productDataRegisters;
 }
