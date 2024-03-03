@@ -147,4 +147,21 @@ public class CartController {
         return ResponseEntity.ok(orderDetailsDto);
     }
 
+    @PostMapping("/checkout-items")
+    public ResponseEntity<List<OrderDetailsDto>> getAsList(@RequestBody List<CartItem> cartItems){
+        System.out.println("cartItems="+cartItems);
+        List<OrderDetailsDto>  orderDetailsDtos = new ArrayList<>();
+        cartItems.forEach(cartItem -> {
+           OrderDetails orderDetail =
+                   orderDetailsRepository.findById(cartItem.getCartId()).orElseThrow(()-> new NotFoundException("order " +
+                           "details not found, " +
+                           "id="+cartItem.getCartId()));
+        OrderDetailsDto orderDetailsDto = orderDetailsMapper.mapTo(orderDetail);
+        orderDetailsDto.getWatch().setDials(null);
+        orderDetailsDto.getWatch().setReviews(null);
+        orderDetailsDtos.add(orderDetailsDto);
+        });
+
+        return ResponseEntity.ok(orderDetailsDtos);
+    }
 }

@@ -21,7 +21,7 @@ public class Cart {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     @JsonManagedReference
     @OrderBy("id ASC") // Sắp xếp danh sách orderDetails theo id
     private List<OrderDetails> orderDetails = new ArrayList<>();

@@ -32,4 +32,6 @@ public class ShippingAddress {
     @JoinColumn(name = "customer_id")
     @JsonBackReference
     private Customer customer;
+
+    private Boolean isDefault;
 }

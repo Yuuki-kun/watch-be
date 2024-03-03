@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.watchbe.watchbedemo.auth.email.EmailSender;
 import com.watchbe.watchbedemo.config.JwtService;
 import com.watchbe.watchbedemo.exception.NotFoundException;
-import com.watchbe.watchbedemo.model.Cart;
-import com.watchbe.watchbedemo.model.Customer;
-import com.watchbe.watchbedemo.model.OrderDetails;
-import com.watchbe.watchbedemo.model.Watch;
+import com.watchbe.watchbedemo.model.*;
 import com.watchbe.watchbedemo.repository.*;
 import com.watchbe.watchbedemo.token.ConfirmationToken;
 import com.watchbe.watchbedemo.token.Token;
@@ -69,11 +66,36 @@ public class AuthenticationService {
                 .phoneNumber(registerRequest.getPhoneNumber())
                 .gender(registerRequest.getGender())
                 .account(account)
-
                 .cart(cart)
                 .email(registerRequest.getEmail())
                 .build();
 
+        List<ShippingAddress> shippingAddresses = new ArrayList<>();
+        shippingAddresses.add(
+                ShippingAddress.builder()
+                        .address("123/4 duong Le Van Sy")
+                        .city("Can Tho")
+                        .district("Ninh Kieu")
+                        .ward("Hung Loi")
+                        .phone("0123456789")
+                        .type(AddressType.PRIVATE)
+                        .name("Tong Cong Minh")
+                        .isDefault(true)
+                        .build()
+        );
+        shippingAddresses.add(
+                ShippingAddress.builder()
+                        .address("123/4 duong 3 thang 2")
+                        .city("Can Tho")
+                        .district("Ninh Kieu")
+                        .ward("An Khanh")
+                        .phone("1234567890")
+                        .type(AddressType.COMPANY)
+                        .name("Cong Ty Det May Minh Tien")
+                        .isDefault(false)
+                        .build()
+        );
+        customer.setShippingAddresses(shippingAddresses);
 
         var savedCustomer = customerRepository.save(customer);
         var savedAccount = savedCustomer.getAccount();
@@ -297,7 +319,6 @@ public class AuthenticationService {
 
             //after that the user will be redirected to check out page
 
-
             return ResponseEntity.ok(AuthenticationResponse
                     .builder()
                     .email(account.getEmail())
@@ -333,7 +354,8 @@ public class AuthenticationService {
         List<OrderDetails> orderDetails = new ArrayList<>(cart.getOrderDetails());
 
         //delete cart and order items in cart
-        cartRepository.delete(cart);
+
+//        cartRepository.delete(cart);
 
         //return cart item list //=> bad process => should move OrderDetails to another list before delete cart
         return orderDetails;

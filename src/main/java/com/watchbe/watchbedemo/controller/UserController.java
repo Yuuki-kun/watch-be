@@ -9,10 +9,7 @@ import com.watchbe.watchbedemo.repository.CustomerRepository;
 import com.watchbe.watchbedemo.repository.ShippingAddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +37,8 @@ public class UserController {
     }
 
     @GetMapping("/cus-info/{cid}")
-    //get mapping customer dto by email
-    public ResponseEntity<CustomerDto> getCustomerByEmail(@PathVariable("cid") Long cid){
+    //get mapping customer dto by id
+    public ResponseEntity<CustomerDto> getCustomerById(@PathVariable("cid") Long cid){
         Customer customer= customerRepository.findCustomerByAccountId(cid);
         List<ShippingAddress> shippingAddresses = shippingAddressRepository.findShippingAddressByCustomerId(customer.getId());
         //map shipping address to shipping address dto
@@ -55,6 +52,7 @@ public class UserController {
                 .ward(shippingAddress.getWard())
                 .district(shippingAddress.getDistrict())
                 .city(shippingAddress.getCity())
+                .isDefault(shippingAddress.getIsDefault())
                 .build()).collect(Collectors.toList());
 
 
@@ -67,5 +65,54 @@ public class UserController {
                 .lastName(customer.getLastName())
                 .shippingAddresses(shippingAddressDtos)
                 .phoneNumber(customer.getPhoneNumber()).build());
+    }
+
+    @GetMapping("/cus-address/{cid}")
+    public ResponseEntity<List<ShippingAddressDto>> getCustomerAddress(@PathVariable("cid") Long cid){
+        Customer customer= customerRepository.findCustomerByAccountId(cid);
+        List<ShippingAddress> shippingAddresses = shippingAddressRepository.findShippingAddressByCustomerId(customer.getId());
+        //map shipping address to shipping address dto
+        List<ShippingAddressDto> shippingAddressDtos = shippingAddresses.stream().map(shippingAddress -> ShippingAddressDto.builder()
+                .id(shippingAddress.getId())
+                .name(shippingAddress.getName())
+                .phone(shippingAddress.getPhone())
+                .address(shippingAddress.getAddress())
+                .type(shippingAddress.getType())
+                .companyName(shippingAddress.getCompanyName())
+                .ward(shippingAddress.getWard())
+                .district(shippingAddress.getDistrict())
+                .city(shippingAddress.getCity())
+                .isDefault(shippingAddress.getIsDefault())
+                .build()).collect(Collectors.toList());
+        return ResponseEntity.ok(shippingAddressDtos);
+    }
+
+    @PutMapping("/cus-address/default/{cid}/{aid}")
+    public ResponseEntity<List<ShippingAddressDto>> updateDefaultAddress(@PathVariable("cid") Long cid, @PathVariable("aid") Long aid){
+        Customer customer= customerRepository.findCustomerByAccountId(cid);
+        List<ShippingAddress> shippingAddresses = shippingAddressRepository.findShippingAddressByCustomerId(customer.getId());
+        //set default address
+        shippingAddresses.forEach(shippingAddress -> {
+            if(shippingAddress.getId().equals(aid)){
+                shippingAddress.setIsDefault(true);
+            }else{
+                shippingAddress.setIsDefault(false);
+            }
+            shippingAddressRepository.save(shippingAddress);
+        });
+//        map shipping address to shipping address dto
+        List<ShippingAddressDto> shippingAddressDtos = shippingAddresses.stream().map(shippingAddress -> ShippingAddressDto.builder()
+                .id(shippingAddress.getId())
+                .name(shippingAddress.getName())
+                .phone(shippingAddress.getPhone())
+                .address(shippingAddress.getAddress())
+                .type(shippingAddress.getType())
+                .companyName(shippingAddress.getCompanyName())
+                .ward(shippingAddress.getWard())
+                .district(shippingAddress.getDistrict())
+                .city(shippingAddress.getCity())
+                .isDefault(shippingAddress.getIsDefault())
+                .build()).collect(Collectors.toList());
+        return ResponseEntity.ok(shippingAddressDtos);
     }
 }
