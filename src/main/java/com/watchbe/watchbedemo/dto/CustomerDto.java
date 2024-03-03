@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,4 +26,6 @@ public class CustomerDto {
 
     private String gender;
     private String avatarLink;
+
+    private List<ShippingAddressDto> shippingAddresses;
 }

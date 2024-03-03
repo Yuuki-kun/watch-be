@@ -1,9 +1,7 @@
 package com.watchbe.watchbedemo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +23,13 @@ public class ShippingAddress {
     private String address;
     private AddressType type;
     private String companyName;
-//    private Ward ward;
-//    private District district;
-//    private City city;
+
+    private String  ward;
+    private String  district;
+    private String city;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    @JsonBackReference
+    private Customer customer;
 }

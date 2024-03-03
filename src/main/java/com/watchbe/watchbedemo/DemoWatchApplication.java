@@ -62,6 +62,8 @@ public class DemoWatchApplication {
                     .lastName("admin")
                     .email("admin@gmail.com")
                     .password("password")
+                    .gender("1")
+                    .phoneNumber("123456")
                     .role(Role.ADMIN).build();
             System.out.println("Admin token: " + authenticationService.register(admin).getAccess_token());
 

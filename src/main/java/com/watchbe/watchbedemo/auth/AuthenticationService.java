@@ -63,11 +63,13 @@ public class AuthenticationService {
                 .role(registerRequest.getRole())
                 .build();
         var customer = Customer.builder()
+                .avatarLink("https://ik.imagekit.io/onlineBook/watch/unnamed%20copy.jpg?updatedAt=1709386785313")
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
                 .phoneNumber(registerRequest.getPhoneNumber())
                 .gender(registerRequest.getGender())
                 .account(account)
+
                 .cart(cart)
                 .email(registerRequest.getEmail())
                 .build();

@@ -62,4 +62,22 @@ public class Customer {
         this.reviews.remove(r);
         r.setCustomer(null);
     }
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ShippingAddress> shippingAddresses = new ArrayList<>();
+    public void setShippingAddresses(List<ShippingAddress> shippingAddresses) {
+        this.shippingAddresses = shippingAddresses;
+        for (ShippingAddress s: shippingAddresses) {
+            s.setCustomer(this);
+        }
+    }
+    public void addShippingAddress(ShippingAddress s){
+        this.shippingAddresses.add(s);
+        s.setCustomer(this);
+    }
+    public void removeShippingAddress(ShippingAddress s){
+        this.shippingAddresses.remove(s);
+        s.setCustomer(null);
+    }
 }
