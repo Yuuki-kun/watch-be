@@ -393,6 +393,8 @@ public class DemoWatchApplication {
             //Sử dụng id của order để lấy thông tin chi tiết của order và thực hiện capture, authorize
             //Có thể sử dụng capture id để thực hiện refund
 
+
+            /*
             URL url = new URL("https://api-m.sandbox.paypal.com/v2/checkout/orders");
             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("POST");
@@ -416,6 +418,8 @@ public class DemoWatchApplication {
             String response = s.hasNext() ? s.next() : "";
 
             System.out.println(response);
+
+             */
 
         };
     }
