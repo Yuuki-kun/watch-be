@@ -14,12 +14,17 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 @SpringBootApplication
 public class DemoWatchApplication {
@@ -371,6 +376,46 @@ public class DemoWatchApplication {
             w2.setImages(images1);
             w2.setDials(dials1);
             watchRepository.save(w2);
+
+
+            //paypal note:
+            //Tạo url để lấy access token sau đó gắn access token vào header để gửi request
+            //intent = authorize : tạo order và authorize (ủy quyền đặt cọc (chưa lấy tiền trong tk khách hàng)
+            //intent = capture : tạo order và capture (lấy tiền trong tk khách hàng)
+            //nếu dùng authorize thì phải gửi request authorize để lấy tiền
+            //nếu dùng capture thì sau đó phải capture để lấy tiền
+            //PayPal-Request-Id: có thể tự sinh 1 cái id
+            //response sẽ trả data lại trong đó có cái link để redirect qua trang thanh toán của paypal
+            //sau khi thanh toán xong thì paypal sẽ redirect lại trang return_url hoặc cancel_url
+            //sau khi thanh toán trạng thái order trở thành approved
+            //nếu không thanh toán thì trạng thái order trở thành voided?
+            //nếu thanh toán mà không đủ tiền thì trạng thái order trở thành failed
+            //Sử dụng id của order để lấy thông tin chi tiết của order và thực hiện capture, authorize
+            //Có thể sử dụng capture id để thực hiện refund
+
+            URL url = new URL("https://api-m.sandbox.paypal.com/v2/checkout/orders");
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            httpConn.setRequestMethod("POST");
+
+            httpConn.setRequestProperty("Content-Type", "application/json");
+            httpConn.setRequestProperty("PayPal-Request-Id", "7b92603e-77ed-4896-8e78-5dsea2050476ab");
+            httpConn.setRequestProperty("Authorization", "Bearer A21AAJW3Xm9mxGB1gM5Vcw0U2b3LyQV9UfcMNWjLiZw6OQWADup9OBG3aNAFXdtXDrWxLeRbZgvzAejNCFZEn_OK4knQmdZaw");
+
+            httpConn.setDoOutput(true);
+            OutputStreamWriter writer = new OutputStreamWriter(httpConn.getOutputStream());
+            writer.write("{ \"intent\": \"AUTHORIZE\", \"purchase_units\": [ { \"reference_id\": " +
+                    "\"d9f80740-38f0-11e8-b467-0ed5f89f718b\", \"amount\": { \"currency_code\": \"USD\", \"value\": \"1000.00\" }, \"shipping\": { \"address\": { \"address_line_1\": \"123 Main Street\", \"address_line_2\": \"Apt 101\", \"admin_area_1\": \"CA\", \"admin_area_2\": \"San Jose\", \"postal_code\": \"95131\", \"country_code\": \"US\" } } } ], \"payment_source\": { \"paypal\": { \"experience_context\": { \"payment_method_preference\": \"IMMEDIATE_PAYMENT_REQUIRED\", \"brand_name\": \"EXAMPLE INC\", \"locale\": \"en-US\", \"landing_page\": \"LOGIN\", \"shipping_preference\": \"SET_PROVIDED_ADDRESS\", \"user_action\": \"PAY_NOW\", \"return_url\": \"https://example.com/returnUrl\", \"cancel_url\": \"https://example.com/cancelUrl\" } } } }");
+            writer.flush();
+            writer.close();
+            httpConn.getOutputStream().close();
+
+            InputStream responseStream = httpConn.getResponseCode() / 100 == 2
+                    ? httpConn.getInputStream()
+                    : httpConn.getErrorStream();
+            Scanner s = new Scanner(responseStream).useDelimiter("\\A");
+            String response = s.hasNext() ? s.next() : "";
+
+            System.out.println(response);
 
         };
     }

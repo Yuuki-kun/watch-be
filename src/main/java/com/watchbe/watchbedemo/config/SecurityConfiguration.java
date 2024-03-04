@@ -38,7 +38,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/user-cart/**").permitAll()
 //                                .requestMatchers("/api/v1/favorite/**").permitAll()
                                 .requestMatchers("/api/v1/provinces/**").permitAll()
-
+                                .requestMatchers("api/v1/checkout/**").permitAll()
                                 .requestMatchers("/api/v1/demo-management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
 
                                 .requestMatchers(GET, "/api/v1/demo-management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
