@@ -1,5 +1,6 @@
 package com.watchbe.watchbedemo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.watchbe.watchbedemo.model.account.Account;
 import jakarta.persistence.*;
@@ -47,6 +48,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
+
+
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
         for (Review r: reviews) {
@@ -79,5 +82,23 @@ public class Customer {
     public void removeShippingAddress(ShippingAddress s){
         this.shippingAddresses.remove(s);
         s.setCustomer(null);
+    }
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Order> orders = new ArrayList<>();
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+        for (Order o: orders) {
+            o.setCustomer(this);
+        }
+    }
+    public void addOrder(Order o){
+        this.orders.add(o);
+        o.setCustomer(this);
+    }
+    public void removeOrder(Order o){
+        this.orders.remove(o);
+        o.setCustomer(null);
     }
 }

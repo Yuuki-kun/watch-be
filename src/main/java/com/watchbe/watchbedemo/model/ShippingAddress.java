@@ -34,4 +34,6 @@ public class ShippingAddress {
     private Customer customer;
 
     private Boolean isDefault;
+
+
 }

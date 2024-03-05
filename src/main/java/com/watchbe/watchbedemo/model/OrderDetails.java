@@ -30,4 +30,9 @@ public class OrderDetails {
     @ManyToOne
     @JoinColumn(name = "watch_id")
     private Watch watch;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
+    private Order order;
 }
