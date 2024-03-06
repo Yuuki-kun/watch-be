@@ -16,4 +16,5 @@ public class CreateCheckoutRequest {
     private long customerId;
 
     private List<Long> orderDetailsId;
+
 }

@@ -48,7 +48,7 @@ public class CartController {
      */
     @PostMapping("/add-to-cart")
     public ResponseEntity<OrderDetailsDto> addToCart(@RequestBody CartItem cartItem){
-
+        System.out.println("cartItem="+cartItem);
         Cart cart = cartRepository.findById((long) cartItem.getCartId()).orElseThrow(()->new NotFoundException("cart " +
                 "not found, " +
                 "id="+cartItem.getCartId()));
@@ -158,7 +158,6 @@ public class CartController {
                            "id="+cartItem.getCartId()));
         OrderDetailsDto orderDetailsDto = orderDetailsMapper.mapTo(orderDetail);
         orderDetailsDto.getWatch().setDials(null);
-        orderDetailsDto.getWatch().setReviews(null);
         orderDetailsDtos.add(orderDetailsDto);
         });
 

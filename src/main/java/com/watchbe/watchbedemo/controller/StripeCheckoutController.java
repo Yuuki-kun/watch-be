@@ -19,10 +19,13 @@ import java.net.http.HttpResponse;
 public class StripeCheckoutController {
     private final StripeCheckoutServiceImpl stripeCheckoutService;
     @PostMapping("/create-payment-session")
-        public ResponseEntity<String> createPaymentIntent(@RequestBody CreateCheckoutRequest checkOutRequest) throws StripeException {
+        public String createPaymentIntent(@RequestBody CreateCheckoutRequest checkOutRequest) throws StripeException {
+        System.out.println("ck request  = "+checkOutRequest);
+
         Order order = stripeCheckoutService.createOrder(checkOutRequest);
         String paymentUrl = stripeCheckoutService.createPaymentSession(order);
-        return ResponseEntity.ok(paymentUrl);
+        System.out.println("ck request  = "+checkOutRequest);
+        return paymentUrl;
     }
 
 }

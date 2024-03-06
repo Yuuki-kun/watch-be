@@ -5,16 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailsDto {
+@AllArgsConstructor
+@Builder
+public class PaymentDto {
     private Long id;
 
-    private long quantity;
-    //price after discount
-    private float price;
-    private WatchNoReview watch;
-
+    private String paymentIntentId;
+    private Date date;
+    private String type;
+    private String paymentMethod;
 }

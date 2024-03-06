@@ -134,14 +134,17 @@ public class StripeCheckoutServiceImpl implements StripeCheckoutService{
 //
 //                .build();
         //put a image url to the line item
+        double priceInVND = orderDetails.getPrice() * 1000; // Convert to VND
 
+// Round the price to two decimal places
+        BigDecimal unitAmount = BigDecimal.valueOf(Math.round(priceInVND * 100) / 100.0);
         return SessionCreateParams.LineItem.builder()
 
                 .setQuantity(orderDetails.getQuantity())
                 .setPriceData(
                         SessionCreateParams.LineItem.PriceData.builder()
-                                .setCurrency("vnd")
-                                .setUnitAmountDecimal(BigDecimal.valueOf((orderDetails.getPrice() * 1000))) //
+                                .setCurrency("usd")
+                                .setUnitAmountDecimal(unitAmount) //
                                 // assuming the amount is in cents
                                 .setProductData(
                                         SessionCreateParams.LineItem.PriceData.ProductData.builder()

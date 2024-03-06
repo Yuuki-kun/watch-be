@@ -40,6 +40,7 @@ public class DemoWatchApplication {
     private static void executeSqlScript(DataSource dataSource, String scriptPath) {
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource(scriptPath));
+//            ScriptUtils.executeSqlScript(connection, new ClassPathResource("script/import_orderdata.sql"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -178,7 +179,7 @@ public class DemoWatchApplication {
                             "steel band. " +
                             "Featuring our Eco-Drive technology – powered by light, any light. Never needs a battery." +
                             " Caliber number F900.")
-                    .defaultPrices(1.395f)
+                    .defaultPrices(1395f)
                     .limited(false)
                     .inventoryQuantity(100L)
                     .warranty(5L).soldQuantity(50L)
@@ -353,7 +354,7 @@ public class DemoWatchApplication {
                             "Ref. 278383rbr has a stainless steel case with a diamond-set yellow gold bezel. It is " +
                             "available with a number of different dials and can be fitted with either an Oyster or " +
                             "Jubilee band.")
-                    .defaultPrices(520.994f)
+                    .defaultPrices(21f)
                     .limited(false)
                     .inventoryQuantity(10)
                     .warranty(5L).soldQuantity(50L)

@@ -22,6 +22,8 @@ public class Order {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "order_date")
+    @OrderBy("order_date desc")
     private Date orderDate;
 
     private double amount;

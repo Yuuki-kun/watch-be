@@ -1,11 +1,15 @@
 package com.watchbe.watchbedemo.controller;
 
 import com.watchbe.watchbedemo.dto.CustomerDto;
+import com.watchbe.watchbedemo.dto.OrderDto;
 import com.watchbe.watchbedemo.dto.ShippingAddressDto;
 import com.watchbe.watchbedemo.exception.NotFoundException;
+import com.watchbe.watchbedemo.mapper.OrderMapperImpl;
 import com.watchbe.watchbedemo.model.Customer;
+import com.watchbe.watchbedemo.model.Order;
 import com.watchbe.watchbedemo.model.ShippingAddress;
 import com.watchbe.watchbedemo.repository.CustomerRepository;
+import com.watchbe.watchbedemo.repository.OrderRepository;
 import com.watchbe.watchbedemo.repository.ShippingAddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,8 @@ public class UserController {
 
     private final CustomerRepository customerRepository;
     private final ShippingAddressRepository shippingAddressRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMapperImpl orderMapper;
     @GetMapping("/name/{email}")
     public ResponseEntity<Object> getUserName(@PathVariable("email") String email){
         Customer customer= customerRepository.findCustomerByEmail(email).orElseThrow(()-> new NotFoundException((
@@ -114,5 +120,12 @@ public class UserController {
                 .isDefault(shippingAddress.getIsDefault())
                 .build()).collect(Collectors.toList());
         return ResponseEntity.ok(shippingAddressDtos);
+    }
+
+    @GetMapping("/cus-orders/{cid}")
+    public ResponseEntity<List<OrderDto>> getCustomerOrders(@PathVariable("cid") Long cid){
+        List<Order> order = orderRepository.findAllByCustomer_Id(cid);
+
+        return ResponseEntity.ok(order.stream().map(orderMapper::mapTo).collect(Collectors.toList()));
     }
 }
