@@ -35,6 +35,7 @@ public class WebConfig {
         config.addAllowedOrigin("http://192.168.1.26:3000");
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://watch-frontend-thesis.vercel.app");
+        config.addAllowedOrigin("https://watch-frontend-thesis-4afmhdapw-tcminhs-projects-d830a868.vercel.app");
 
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
