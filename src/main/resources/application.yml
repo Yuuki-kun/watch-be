@@ -1,8 +1,11 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/jwt-demo
+#    url: jdbc:postgresql://localhost:5432/jwt-demo
+#    username: postgres
+#    password: roottcm123
+    url: jdbc:postgresql://viaduct.proxy.rlwy.net:34409/railway
     username: postgres
-    password: roottcm123
+    password: '*DBG6352fg5f5*BCBC--EB2ddA36f2BE'
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

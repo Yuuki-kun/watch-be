@@ -31,7 +31,10 @@ public class WebConfig {
     private CorsConfiguration getCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://192.168.1.30:3000");
+        config.addAllowedOrigin("http://192.168.1.26:3000");
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://watch-frontend-thesis.vercel.app");
 
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,

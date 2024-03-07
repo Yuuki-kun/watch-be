@@ -32,9 +32,9 @@ public class DemoWatchApplication {
     public static void main(String[] args) {
 //        SpringApplication.run(DemoWatchApplication.class, args);
         ApplicationContext context = SpringApplication.run(DemoWatchApplication.class, args);
-
-        DataSource dataSource = context.getBean(DataSource.class);
-        executeSqlScript(dataSource, "script/ImportData_vn_units.sql");
+//
+//        DataSource dataSource = context.getBean(DataSource.class);
+//        executeSqlScript(dataSource, "script/ImportData_vn_units.sql");
 
     }
     private static void executeSqlScript(DataSource dataSource, String scriptPath) {
