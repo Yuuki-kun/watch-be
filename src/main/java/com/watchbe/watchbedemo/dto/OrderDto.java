@@ -17,6 +17,8 @@ import java.util.List;
 public class OrderDto {
     private Long id;
 
+    private CustomerDto customer;
+
     private Date orderDate;
 
     private double amount;
@@ -26,5 +28,4 @@ public class OrderDto {
     private OrderStatusDto orderStatus;
     private ShippingAddressDto address;
     private PaymentDto payment;
-
 }

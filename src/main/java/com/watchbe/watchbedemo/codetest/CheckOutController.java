@@ -1,11 +1,11 @@
 //package com.watchbe.watchbedemo.codetest;
 //
-//import com.stripe.Stripe;
-//import com.stripe.exception.StripeException;
-//import com.stripe.model.PaymentIntent;
-//import com.stripe.model.checkout.Session;
-//import com.stripe.param.PaymentIntentCreateParams;
-//import com.stripe.param.checkout.SessionCreateParams;
+//import com.admin.Stripe;
+//import com.admin.exception.StripeException;
+//import com.admin.model.PaymentIntent;
+//import com.admin.model.checkout.Session;
+//import com.admin.param.PaymentIntentCreateParams;
+//import com.admin.param.checkout.SessionCreateParams;
 //import com.watchbe.watchbedemo.dto.CartItem;
 //import com.watchbe.watchbedemo.dto.CreateCheckoutRequest;
 //import com.watchbe.watchbedemo.model.*;

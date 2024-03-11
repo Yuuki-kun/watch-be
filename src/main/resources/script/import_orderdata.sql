@@ -11,7 +11,7 @@ VALUES (120, 10, 10, 1, 1, '2021-01-01', 3, 1);
 UPDATE order_details SET order_id = 1 WHERE id = 1;
 
 INSERT INTO payment_ (date, id, payment_intent_id, payment_method, type) VALUES
-('2021-01-01', 1, 'pi_1', 'card', 'stripe');
+('2021-01-01', 1, 'pi_1', 'card', 'admin');
 
 -- insert into order__ (payment_id) values (1);
 UPDATE order__ SET payment_id = 1 WHERE id = 1;

@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                         authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/api/v1/authentication/**").permitAll()
                                 .requestMatchers("/products/**").permitAll()
+                                .requestMatchers("/api/v1/webhook/**").permitAll()
                                 .requestMatchers("/api/v1/user-cart/**").permitAll()
 //                                .requestMatchers("/api/v1/favorite/**").permitAll()
                                 .requestMatchers("/api/v1/provinces/**").permitAll()

@@ -45,8 +45,8 @@ public class WebConfig {
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()));
+                HttpMethod.DELETE.name()));
+//                HttpMethod.OPTIONS.name()));
         config.setMaxAge(MAX_AGE);
         return config;
     }

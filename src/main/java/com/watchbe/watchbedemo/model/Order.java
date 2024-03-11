@@ -30,6 +30,8 @@ public class Order {
     private float tax;
     private float shipping;
 
+    private String stripePaymentId;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     @JsonManagedReference
