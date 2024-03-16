@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface DistrictRepository extends JpaRepository<District, String> {
     List<District> findAllByProvinceCode(String provinceCode);
+    District findByName(String name);
 }

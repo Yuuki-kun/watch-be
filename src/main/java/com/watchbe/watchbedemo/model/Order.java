@@ -31,6 +31,7 @@ public class Order {
     private float shipping;
 
     private String stripePaymentId;
+    private String stripePaymentIntentId;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

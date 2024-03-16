@@ -128,4 +128,49 @@ public class UserController {
 
         return ResponseEntity.ok(order.stream().map(orderMapper::mapTo).collect(Collectors.toList()));
     }
+
+    @PostMapping("/{cid}/address")
+    public ResponseEntity<List<ShippingAddressDto>> addAddress(@PathVariable("cid") Long cid,
+                                                            @RequestBody ShippingAddressDto shippingAddressDto){
+        Customer customer= customerRepository.findById(cid).orElseThrow(()-> new NotFoundException((
+                "user with " +
+                        "id "+cid+" not found!")));
+        List<ShippingAddress> shippingAddresses = shippingAddressRepository.findShippingAddressByCustomerId(customer.getId());
+        //set default address
+        shippingAddresses.forEach(shippingAddress -> {
+            if(shippingAddress.getIsDefault())
+                shippingAddress.setIsDefault(false);
+            shippingAddressRepository.save(shippingAddress);
+        });
+
+        ShippingAddress shippingAddress = ShippingAddress.builder()
+                .name(shippingAddressDto.getName())
+                .phone(shippingAddressDto.getPhone())
+                .address(shippingAddressDto.getAddress())
+                .type(shippingAddressDto.getType())
+                .companyName(shippingAddressDto.getCompanyName())
+                .ward(shippingAddressDto.getWard())
+                .district(shippingAddressDto.getDistrict())
+                .city(shippingAddressDto.getCity())
+                .isDefault(shippingAddressDto.getIsDefault())
+                .customer(customer)
+                .build();
+        shippingAddressRepository.save(shippingAddress);
+
+
+        List<ShippingAddressDto> shippingAddressDtos =
+                shippingAddressRepository.findShippingAddressByCustomerId(customer.getId()).stream().map(sd -> ShippingAddressDto.builder()
+                .id(sd.getId())
+                .name(sd.getName())
+                .phone(sd.getPhone())
+                .address(sd.getAddress())
+                .type(sd.getType())
+                .companyName(sd.getCompanyName())
+                .ward(sd.getWard())
+                .district(sd.getDistrict())
+                .city(sd.getCity())
+                .isDefault(sd.getIsDefault())
+                .build()).collect(Collectors.toList());
+        return ResponseEntity.ok(shippingAddressDtos);
+    }
 }
