@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long>{
     List<Order> findAllByCustomer_Id(Long id);
+    Order findByStripePaymentId(String stripePaymentId);
 }

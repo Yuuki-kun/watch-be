@@ -37,8 +37,8 @@ public class OrderManagementServiceImpl implements OrderManagementService {
     public List<OrderDto> capturePayment(Long orderId) throws StripeException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-        String stripePaymentId = order.getStripePaymentId();
-        PaymentIntent paymentIntent = PaymentIntent.retrieve(stripePaymentId);
+        String stripePaymentIntentId = order.getStripePaymentIntentId();
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(stripePaymentIntentId);
         paymentIntent.capture();
 
         // Retrieve the existing OrderStatus or create a new one if it doesn't exist

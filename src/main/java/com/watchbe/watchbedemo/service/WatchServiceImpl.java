@@ -6,6 +6,7 @@ import com.watchbe.watchbedemo.mapper.WatchMapperImpl;
 import com.watchbe.watchbedemo.model.Watch;
 import com.watchbe.watchbedemo.repository.WatchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,5 +35,9 @@ public class WatchServiceImpl implements WatchService {
         return watchMapper.mapTo(watch);
     }
 
+    @Override
+    public List<WatchDto> getAll(Pageable page) {
+        return watchRepository.findAll(page).stream().map(watchMapper::mapTo).collect(Collectors.toList());
+    }
 
 }

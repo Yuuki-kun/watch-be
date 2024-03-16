@@ -4,10 +4,12 @@ import com.watchbe.watchbedemo.dto.WatchDto;
 import com.watchbe.watchbedemo.repository.ReviewRepository;
 import com.watchbe.watchbedemo.service.WatchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,16 @@ public class WatchController {
         return ResponseEntity.ok(watchService.getAll());
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<List<WatchDto>> getAllWatchByPage(Pageable page){
+        List<WatchDto> watchDtos = watchService.getAll(page);
+        List<WatchDto> doubleList =new ArrayList<>();
+        for(int i=0; i<10; i++){
+            watchDtos.forEach(watchDto -> doubleList.add(watchDto));
+        }
+        return ResponseEntity.ok(doubleList);
+    }
+    
     @GetMapping("/details/{reference}")
     public ResponseEntity<WatchDto> getWatchDetailsByReference(@PathVariable String reference){
         System.out.println(reference);

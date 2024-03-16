@@ -1,5 +1,6 @@
 package com.watchbe.watchbedemo.auth;
 
+import com.watchbe.watchbedemo.service.PaypalService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,7 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-
-
+    private final PaypalService paypalService;
     @PostMapping("/register/{method}/{tempoCartId}")
     public ResponseEntity<AuthenticationResponse> register(
             @PathVariable(value = "method", required = false) String method,
@@ -60,6 +60,14 @@ public class AuthenticationController {
         return authenticationService.confirm(token);
     }
 
-
-
+    @PostMapping("/test-payment")
+    public ResponseEntity<String> testPayment(
+            @RequestBody String paymentMethodId
+    ) throws IOException {
+        //get order info
+        //create order
+        paypalService.checkOrder();
+//        checkoutService.processPaymentIntent();
+        return ResponseEntity.ok("Payment successful");
+    }
 }
