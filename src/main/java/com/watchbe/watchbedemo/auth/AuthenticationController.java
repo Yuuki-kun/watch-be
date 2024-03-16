@@ -66,7 +66,7 @@ public class AuthenticationController {
     ) throws IOException {
         //get order info
         //create order
-        paypalService.checkOrder();
+        paypalService.checkOrder("2");
 //        checkoutService.processPaymentIntent();
         return ResponseEntity.ok("Payment successful");
     }

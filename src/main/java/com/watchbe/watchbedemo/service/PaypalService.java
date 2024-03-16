@@ -48,16 +48,16 @@ public class PaypalService extends CheckoutService {
     @Override
     protected String createPaymentIntent(Order order) {
 
-    return "paypal";
+        return "paypal";
     }
 
-    public void checkOrder() throws IOException {
+    public void checkOrder(String orderId) throws IOException {
         String accessToken = paypalAccessTokenStore.getAccessToken("access_token");
         if(accessToken == null) {
             System.out.println("token is expired");
             accessToken = generateAccessToken();
         }
-        URL url = new URL("https://api-m.sandbox.paypal.com/v2/checkout/orders/2GM276124H571543Y");
+        URL url = new URL("https://api-m.sandbox.paypal.com/v2/checkout/orders/"+orderId);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         httpConn.setRequestMethod("GET");
 
