@@ -64,6 +64,6 @@ stripe:
   secret-key: sk_test_51OnxyHGZc9ClwVjj5M3k9yANNv7RjKs5AXsUBFJHkiF1JlGBnYI9luKpBkY6nOCABHQfn0HWh4woCmiSoD6nnIfM00h7XhTqVy
 
 paypal:
-    clientId: AWbhO2aZTZRskaEvmgmoqIpre4rzFOxBX8-s5O8gRct63Fav2XtjNC-1wRoRj2jGyKPh8arTgcgldrIPDgTVRv
+    clientId: AWbhO2abZTZRskaEvmgmoqIpre4rzFOxBX8-s5O8gRct63Fav2XtjNC-1wRoRj2jGyKPh8arTgcgldrIPDgTVRv
     clientSecret: ED4YdJOfaylr8m-qbQyXiO6VDvoMSEe6c8jHHxQBCbJu4O2zLf5CQfG79ZrB8MzCqm_4BW8SVEhvCY7O
     baseUrl: https://api-m.sandbox.paypal.com
